@@ -1,6 +1,8 @@
 # Use the official Ubuntu 20.04 image as the base
 FROM ubuntu:20.04
 
+
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV VPN_DOMAIN_OR_IP=your_vpn_server_domain_or_ip
