@@ -12,7 +12,7 @@ ENV VPN_PASSWORD=your_password
 # Update the system and install necessary software
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y strongswan libcharon-extra-plugins moreutils iptables-persistent
+    apt-get install -y strongswan libcharon-extra-plugins moreutils iptables-persistent curl
 
 # Copy the VPN setup script into the container
 COPY setup_vpn.sh /setup_vpn.sh

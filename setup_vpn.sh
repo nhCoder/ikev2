@@ -7,6 +7,12 @@
 # apt-get install -y strongswan strongswan-plugin-eap-mschapv2 moreutils iptables-persistent
 
 # Set up VPN configuration
+
+
+HOST=$(curl -s https://api.ipify.org)
+VPN_USERNAME="vpn"
+VPN_PASSWORD="your_password"
+
 cat > /etc/ipsec.conf <<EOF
 config setup
     charondebug="ike 1, knl 1, cfg 0"
@@ -23,8 +29,9 @@ conn ikev2-vpn
     dpddelay=300s
     rekey=no
     left=%any
-    leftid=@your_vpn_server_domain_or_ip
-    leftauth=eap-mschapv2
+    leftid=$HOST
+    leftauth=pubkey
+    leftsendcert=never
     leftsubnet=0.0.0.0/0
     right=%any
     rightid=%any
@@ -35,9 +42,10 @@ conn ikev2-vpn
     eap_identity=%identity
 EOF
 
+
 # Set up VPN secrets
 cat > /etc/ipsec.secrets <<EOF
-your_username %any% : EAP "your_password"
+$VPN_USERNAME %any% : EAP "$VPN_PASSWORD"
 EOF
 
 # Enable packet forwarding
@@ -54,7 +62,7 @@ iptables -A FORWARD -s 10.10.10.0/24 -j ACCEPT
 iptables-save > /etc/iptables/rules.v4
 
 # Restart the VPN server
-# systemctl restart strongswan
+systemctl restart strongswan
 
 # Enable the VPN server at startup
 systemctl enable strongswan
