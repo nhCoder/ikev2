@@ -1,0 +1,26 @@
+# Use the official Ubuntu 20.04 image as the base
+FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV VPN_DOMAIN_OR_IP=your_vpn_server_domain_or_ip
+ENV VPN_USERNAME=your_username
+ENV VPN_PASSWORD=your_password
+
+# Update the system and install necessary software
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y strongswan libcharon-extra-plugins moreutils iptables-persistent
+
+# Copy the VPN setup script into the container
+COPY setup_vpn.sh /setup_vpn.sh
+RUN chmod +x /setup_vpn.sh
+
+# Run the VPN setup script
+RUN /setup_vpn.sh
+
+# Expose necessary ports
+EXPOSE 500/udp 4500/udp
+
+# Start the strongSwan service when the container is run
+CMD ["/usr/sbin/ipsec", "start", "--nofork"]
